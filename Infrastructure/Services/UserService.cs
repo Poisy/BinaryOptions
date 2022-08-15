@@ -18,7 +18,10 @@ namespace Infrastructure.Services
         {
             return await _repo.GetById(id);
         }
-        
-        
+
+        public async Task<ApplicationUser> GetByUsername(string username)
+        {
+            return await _repo.FirstOrDefault(user => user.UserName == username);
+        }
     }
 }

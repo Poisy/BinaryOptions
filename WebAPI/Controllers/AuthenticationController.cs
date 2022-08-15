@@ -73,6 +73,7 @@ namespace WebAPI.Controllers
             }
 
             var token = AuthenticationHelper.GenerateToken(user, _jwtBearerTokenSettings);
+            
             return Ok(new { Token = token, Message = "Success" });
         }
     }
