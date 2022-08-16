@@ -26,3 +26,12 @@ export async function getUser(token) {
 
     return response;
 }
+
+export async function doesUserExist(email) {
+    const response = await fetch(`https://localhost:5001/api/auth/exist?email=`+email, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    })
+
+    return response;
+}

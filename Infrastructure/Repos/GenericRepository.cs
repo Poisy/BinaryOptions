@@ -33,7 +33,7 @@ namespace Infrastructure.Repos
 
         public async Task<T> FirstOrDefault(Expression<Func<T, bool>> expression)
         {
-            return await _db.Set<T>().FirstAsync(expression);
+            return await _db.Set<T>().FirstOrDefaultAsync(expression);
         }
 
         public async Task Add(T entity)

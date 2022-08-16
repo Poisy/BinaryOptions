@@ -1,15 +1,35 @@
 import logo from './logo.svg';
 import './css/App.css';
-import { useState } from "react";
+import React, {useEffect, useState} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import Register from "./components/Register";
 import Login from "./components/Login";
+import {Button} from "react-bootstrap";
+import { useCookies } from "react-cookie";
 
 function App() {
+  const [cookies, setCookie, removeCookie] = useCookies();
+  
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [token, setToken] = useState();
-  const [user, setUser] = useState();
+  const [token, setToken] = useState(cookies['token']);
+  const [user, setUser] = useState(cookies['user']);
+  
+  function login(userArg, tokenArg) {
+    setUser(userArg);
+    setToken(tokenArg);
+    
+    setCookie('user', userArg, { maxAge: 86400 })
+    setCookie('token', tokenArg, { maxAge: 86400 })
+  }
+  
+  function logout() {
+    setUser(null);
+    setToken(null);
+    
+    removeCookie('user');
+    removeCookie('token');
+  }
   
   return (
     <div className="App">
@@ -30,11 +50,12 @@ function App() {
               </ul>
               <div className="d-flex">
                 {
-                  token != null ? "" :
+                  token == null ?
                       <>
-                        <Register state={showRegisterModal} setState={setShowRegisterModal} setLoginState={setShowLoginModal} user={user} setUser={setUser}/>
-                        <Login state={showLoginModal} setState={setShowLoginModal} setRegisterState={setShowRegisterModal} setToken={setToken} user={user} setUser={setUser}/>
-                      </>
+                        <Register state={showRegisterModal} setState={setShowRegisterModal} setLoginState={setShowLoginModal} user={user}/>
+                        <Login state={showLoginModal} setState={setShowLoginModal} setRegisterState={setShowRegisterModal} user={user} login={login}/>
+                      </> :
+                      <Button variant='outline-success' onClick={logout}>Logout</Button>
                 }
               </div>
             </div>

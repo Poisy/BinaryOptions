@@ -50,6 +50,7 @@ namespace WebAPI
                 })
                 .AddEntityFrameworkStores<BinaryOptionsDbContext>();
 
+            services.AddSingleton<IConfiguration>(Configuration);
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 

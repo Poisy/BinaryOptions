@@ -3,7 +3,12 @@ import 'bootstrap/dist/css/bootstrap.css';
 import "bootstrap/dist/js/bootstrap.min.js";
 import {Modal, Button, Form} from "react-bootstrap";
 import {useForm} from "react-hook-form";
-import {loginUser, getUser} from "../services/authenticationService";
+import {loginUser, registerUser, getUser, doesUserExist} from "../services/authenticationService";
+import {GoogleLogin, googleLogout} from "@react-oauth/google";
+import FacebookLogin from 'react-facebook-login';
+import jwt_decode from 'jwt-decode';
+
+googleLogout();
 
 const Login = (props) => {
     const handleClose = () => props.setState(false);
@@ -21,11 +26,11 @@ const Login = (props) => {
             .then(async res => {
                 if (res.status === 200) {
                     await res.json().then(async res => {
-                        props.setToken(res.token);
-                        await getUser(res.token).then(async res => {
+                        let token = res.token;
+                        await getUser(token).then(async res => {
                             if (res.status === 200) {
                                 await res.json().then(res => {
-                                    props.setUser(res);
+                                    props.login(res, token);
                                 })
                             } else {
                                 alert('Something went wrong...');
@@ -33,11 +38,58 @@ const Login = (props) => {
                         });
                     });
                 } else {
-                    setError('Email', 
+                    setError('error', 
                         { type: 'focus', message: 'Wrong Email or Password!' }, 
                         { shouldFocus: true })
                 }
             });
+    }
+    
+    async function handleGoogleLogin(result) {
+        let objResult = jwt_decode(result.credential);
+        await doesUserExist(objResult.email).then(res => {
+            res.json().then(async res => {
+                if (res.exist) {
+                    await onSubmit({
+                        email: objResult.email,
+                        thirdParty: true
+                    })
+                } else {
+                    await registerUser({
+                        username: objResult.email,
+                        email: objResult.email,
+                        nationality: 'Unknown',
+                        thirdParty: true
+                    }).then(async res => await onSubmit({
+                        email: objResult.email,
+                        thirdParty: true
+                    }));
+                }
+            })
+        })
+    }
+
+    const handleFacebookLogin = (response) => {
+        doesUserExist(response.email).then(res => {
+            res.json().then(async res => {
+                if (res.exist) {
+                    await onSubmit({
+                        email: response.email,
+                        thirdParty: true
+                    })
+                } else {
+                    await registerUser({
+                        username: response.email,
+                        email: response.email,
+                        nationality: 'Unknown',
+                        thirdParty: true
+                    }).then(async res => await onSubmit({
+                        email: response.email,
+                        thirdParty: true
+                    }));
+                }
+            })
+        })
     }
 
     return (
@@ -53,6 +105,7 @@ const Login = (props) => {
                     </Modal.Header>
                     <Modal.Body className="">
                         <form onSubmit={handleSubmit(onSubmit)}>
+                            <div className="text-danger">{errors.error?.message}</div>
                             <div className="mb-3">
                                 <label htmlFor="email" className="form-label">Email</label>
                                 <input type="email" className="form-control" id="email" aria-describedby="emailHelp"
@@ -75,6 +128,14 @@ const Login = (props) => {
                                 <Button type='submit' variant="primary">
                                     Sign In
                                 </Button>
+                                <GoogleLogin
+                                    onSuccess={handleGoogleLogin}>
+                                </GoogleLogin>
+                                <FacebookLogin
+                                    appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                                    fields="name,email,picture"
+                                    callback={handleFacebookLogin}
+                                    size='small'/>
                             </Modal.Footer>
                         </form>
                     </Modal.Body>

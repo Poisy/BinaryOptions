@@ -5,6 +5,7 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using WebAPI.Configuration;
 using WebAPI.Helpers;
@@ -16,13 +17,15 @@ namespace WebAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly IConfiguration _configuration;
         private readonly JwtBearerTokenSettings _jwtBearerTokenSettings;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public AuthenticationController(IOptions<JwtBearerTokenSettings> jwtTokenOptions, 
-            UserManager<ApplicationUser> userManager, UserService userService)
+            UserManager<ApplicationUser> userManager, UserService userService, IConfiguration configuration)
         {
             _userService = userService;
+            _configuration = configuration;
             _userManager = userManager;
             _jwtBearerTokenSettings = jwtTokenOptions.Value;
         }
@@ -43,8 +46,19 @@ namespace WebAPI.Controllers
                 Nationality = userModel.Nationality,
                 Balance = 10000
             };
+
+            IdentityResult result;
             
-            var result = await _userManager.CreateAsync(newUser, userModel.Password);
+            if (userModel.ThirdParty)
+            {
+                result = await _userManager.CreateAsync(newUser, _configuration["JwtBearerTokenSettings:SecretKey"]+newUser.Email);
+            }
+            else
+            {
+                result = await _userManager.CreateAsync(newUser, userModel.Password);
+            }
+            
+            
             
             if (!result.Succeeded)
             {
@@ -64,17 +78,39 @@ namespace WebAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]LoginUser userModel)
         {
+            if (!ModelState.IsValid || userModel is null) return new BadRequestObjectResult(new { Message = "Login failed" });
+         
             ApplicationUser user;
-
-            if (!ModelState.IsValid || userModel is null || 
-                (user = await AuthenticationHelper.ValidateUser(userModel, _userManager)) == null)
+            
+            if (userModel.ThirdParty)
             {
-                return new BadRequestObjectResult(new { Message = "Login failed" });
+                userModel.Password = _configuration["JwtBearerTokenSettings:SecretKey"] + userModel.Email;
+                    
+                if ((user = await AuthenticationHelper.ValidateUser(userModel, _userManager)) == null)
+                {
+                    return new BadRequestObjectResult(new { Message = "Login failed" });
+                }
+            }
+            else
+            {
+                if ((user = await AuthenticationHelper.ValidateUser(userModel, _userManager)) == null)
+                {
+                    return new BadRequestObjectResult(new { Message = "Login failed" });
+                }
             }
 
             var token = AuthenticationHelper.GenerateToken(user, _jwtBearerTokenSettings);
             
             return Ok(new { Token = token, Message = "Success" });
+        }
+        
+        [HttpGet("exist")]
+        public async Task<IActionResult> DoesExist(string email)
+        {
+            return Ok(new
+            {
+                exist = await _userService.ExistByEmail(email)
+            });
         }
     }
 }

@@ -7,7 +7,6 @@ namespace Infrastructure.Models
         [Required]
         public string UserName { get; set; }
 
-        [Required]
         public string Password { get; set; }
 
         [Required]
@@ -15,5 +14,7 @@ namespace Infrastructure.Models
 
         [Required]
         public string Nationality { get; set; }
+
+        public bool ThirdParty { get; set; } = false;
     }
 }

@@ -23,5 +23,12 @@ namespace Infrastructure.Services
         {
             return await _repo.FirstOrDefault(user => user.UserName == username);
         }
+
+        public async Task<bool> ExistByEmail(string email)
+        {
+            var user = await _repo.FirstOrDefault(user => user.Email == email);
+
+            return user != null;
+        }
     }
 }
