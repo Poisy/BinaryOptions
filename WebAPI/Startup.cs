@@ -21,6 +21,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using WebAPI.Configuration;
+using WebAPI.Controllers;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -39,6 +41,8 @@ namespace WebAPI
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" }); });
 
+            services.AddMemoryCache();
+
             services.AddDbContext<BinaryOptionsDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -51,12 +55,14 @@ namespace WebAPI
                 .AddEntityFrameworkStores<BinaryOptionsDbContext>();
 
             services.AddSingleton<IConfiguration>(Configuration);
-
+            
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             services.AddScoped<UserService>();
             
-            // configure strongly typed settings objects
+            services.AddHostedService<CurrencyHostedService>();
+
+            #region JWT Authentication
             var jwtSection = Configuration.GetSection("JwtBearerTokenSettings");
             services.Configure<JwtBearerTokenSettings>(jwtSection);
             var jwtBearerTokenSettings = jwtSection.Get<JwtBearerTokenSettings>();
@@ -83,6 +89,7 @@ namespace WebAPI
                         ClockSkew = TimeSpan.Zero
                     };
                 });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -107,7 +114,10 @@ namespace WebAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
