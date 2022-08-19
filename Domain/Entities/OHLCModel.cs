@@ -1,4 +1,4 @@
-namespace WebAPI.Models
+namespace Domain.Entities
 {
     public class OHLCModel
     {

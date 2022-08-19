@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using WebAPI.Helpers;
-using WebAPI.Models;
 using WebAPI.Services;
 
 namespace WebAPI.Controllers
@@ -38,26 +37,13 @@ namespace WebAPI.Controllers
         
         
         //=============================================================================================
-        [HttpGet("{currency}")]
-        public IActionResult GetAll(string currency)
+        [HttpGet("ohlc/{currency}")]
+        public IActionResult GetAllOHLC(string currency)
         {
             if (_availableCurrencies.Contains(currency))
             {
-                var wantedCurrencies = _data.Select(currencyData =>
-                {
-                    var ohlcModel = currencyData.Currencies[currency];
-                
-                    return new CurrencySingleData
-                    {
-                        StartDate = currencyData.StartDate,
-                        EndDate = currencyData.EndDate,
-                        Name = currency,
-                        High = ohlcModel.High,
-                        Low = ohlcModel.Low,
-                        Open = ohlcModel.Open,
-                        Close = ohlcModel.Close
-                    };
-                });
+                var wantedCurrencies = _data
+                    .Select(currencyData => currencyData.GetSingleData(currency));
                 
                 return Ok(wantedCurrencies);
             }
@@ -67,24 +53,30 @@ namespace WebAPI.Controllers
         
         
         //=============================================================================================
-        [HttpGet("latest/{currency}")]
+        [HttpGet("ohlc/latest/{currency}")]
+        public IActionResult GetLatestOHLC(string currency)
+        {
+            if (_availableCurrencies.Contains(currency) && _data.Last != null)
+            {
+                var currencySingleData = _data.Last.Value.GetSingleData(currency);
+
+                return Ok(currencySingleData);
+            }
+
+            return BadRequest($"Unknown currency '{currency}'");
+        }
+        
+        
+        //=============================================================================================
+        [HttpGet("{currency}")]
         public IActionResult GetLatest(string currency)
         {
             if (_availableCurrencies.Contains(currency) && _data.Last != null)
             {
-                var currencyData = _data.Last.Value;
-                var ohlcModel = currencyData.Currencies[currency];
+                var currencyValue = _data.Last.Value.Currencies
+                    .FirstOrDefault(currency1 => currency1.Name == currency)?.Value;
                 
-                return Ok(new CurrencySingleData
-                {
-                    StartDate = currencyData.StartDate,
-                    EndDate = currencyData.EndDate,
-                    Name = currency,
-                    High = ohlcModel.High,
-                    Low = ohlcModel.Low,
-                    Open = ohlcModel.Open,
-                    Close = ohlcModel.Close
-                });
+                return Ok(new { name = currency, value = currencyValue });
             }
 
             return BadRequest($"Unknown currency '{currency}'");
