@@ -1,25 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace WebAPI.Models
 {
     public class CurrencyResult
     {
-        public MetaProp Meta { get; set; }
+        [JsonPropertyName("end_date")]
+        public string EndDate { get; set; }
+        
+        [JsonPropertyName("start_date")]
+        public string StartDate { get; set; }
 
-        public ResponseProp Response { get; set; }
-
-        public class ResponseProp
-        {
-            public DateTime Date { get; set; }
-
-            public Dictionary<string, double> Rates { get; set; }
-        }
-
-
-        public class MetaProp
-        {
-            public int Code { get; set; }
-        }
+        public Dictionary<DateTime, Dictionary<string, OHLCModel>> Price { get; set; }
     }
 }

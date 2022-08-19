@@ -38,33 +38,56 @@ namespace WebAPI.Controllers
         
         
         //=============================================================================================
-        [HttpGet("{baseCurrency}")]
-        public IActionResult GetByBase(string baseCurrency, [FromBody]string[] currencies = null)
+        [HttpGet("{currency}")]
+        public IActionResult GetAll(string currency)
         {
-            if (_availableCurrencies.Contains(baseCurrency))
+            if (_availableCurrencies.Contains(currency))
             {
                 var wantedCurrencies = _data.Select(currencyData =>
-                    CurrencyHelper.FilterCurrencyData(currencyData, _availableCurrencies,
-                        baseCurrency, currencies));
+                {
+                    var ohlcModel = currencyData.Currencies[currency];
+                
+                    return new CurrencySingleData
+                    {
+                        StartDate = currencyData.StartDate,
+                        EndDate = currencyData.EndDate,
+                        Name = currency,
+                        High = ohlcModel.High,
+                        Low = ohlcModel.Low,
+                        Open = ohlcModel.Open,
+                        Close = ohlcModel.Close
+                    };
+                });
                 
                 return Ok(wantedCurrencies);
             }
-
-            return BadRequest($"Unknown currency '{baseCurrency}'");
+        
+            return BadRequest($"Unknown currency '{currency}'");
         }
         
         
         //=============================================================================================
-        [HttpGet("latest/{baseCurrency}")]
-        public IActionResult GetLastByBase(string baseCurrency, [FromBody]string[] currencies = null)
+        [HttpGet("latest/{currency}")]
+        public IActionResult GetLatest(string currency)
         {
-            if (_availableCurrencies.Contains(baseCurrency) && _data.Last != null)
+            if (_availableCurrencies.Contains(currency) && _data.Last != null)
             {
-                return Ok(CurrencyHelper.FilterCurrencyData(_data.Last.Value, _availableCurrencies, 
-                    baseCurrency, currencies));
+                var currencyData = _data.Last.Value;
+                var ohlcModel = currencyData.Currencies[currency];
+                
+                return Ok(new CurrencySingleData
+                {
+                    StartDate = currencyData.StartDate,
+                    EndDate = currencyData.EndDate,
+                    Name = currency,
+                    High = ohlcModel.High,
+                    Low = ohlcModel.Low,
+                    Open = ohlcModel.Open,
+                    Close = ohlcModel.Close
+                });
             }
 
-            return BadRequest($"Unknown currency '{baseCurrency}'");
+            return BadRequest($"Unknown currency '{currency}'");
         }
     }
 }

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace WebAPI.Models
 {
-    public class CurrencyData
+    public class CurrencySingleData : OHLCModel
     {
+        public string Name { get; set; }
+        
         public DateTime StartDate { get; set; }
+        
         public DateTime EndDate { get; set; }
-
-        public Dictionary<string, OHLCModel> Currencies { get; set; }
     }
 }

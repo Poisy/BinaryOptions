@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebAPI.Helpers;
 using WebAPI.Models;
 
 namespace WebAPI.Services
@@ -22,7 +23,7 @@ namespace WebAPI.Services
         private readonly string _apiKey;
         private readonly string[] _availableCurrencies;
         private Timer _timer;
-        private const int FETCH_DELAY = 30;
+        private const int FETCH_DELAY = 60;
         public const string CACHE_KEY = "currency_data";
 
 
@@ -57,37 +58,27 @@ namespace WebAPI.Services
                 BaseAddress = new Uri(_apiURL)
             };
 
-            var response = client
-                .GetFromJsonAsync<CurrencyResult>($"?api_key={_apiKey}")
-                .Result;
+            LinkedList<CurrencyData> cachedData;
 
-            if (response?.Meta.Code == 200)
+            if (!_cache.TryGetValue("currency_data", out cachedData))
             {
-                LinkedList<CurrencyData> currencyData;
+                cachedData = new LinkedList<CurrencyData>();
 
-                if (!_cache.TryGetValue("currency_data", out currencyData))
+                _cache.Set(CACHE_KEY, cachedData, new MemoryCacheEntryOptions
                 {
-                    currencyData = new LinkedList<CurrencyData>();
-
-                    _cache.Set(CACHE_KEY, currencyData, new MemoryCacheEntryOptions
-                    {
-                        Priority = CacheItemPriority.High
-                    });
-                }
-
-                if (currencyData.Count > 100)
-                {
-                    currencyData.RemoveFirst();
-                }
-
-                currencyData.AddLast(new CurrencyData
-                {
-                    Date = response.Response.Date,
-                    Currencies = response.Response.Rates
-                        .Where(c => _availableCurrencies.Contains(c.Key))
-                        .ToDictionary(c => c.Key, c => c.Value)
-                });  
+                    Priority = CacheItemPriority.High
+                });
             }
+
+            if (cachedData.Count > 100)
+            {
+                cachedData.RemoveFirst();
+            }
+
+            var currencyData = CurrencyFetchHelper.Fetch(client, _apiURL, _apiKey,
+                DateTime.Now.AddMinutes(-1), DateTime.Now, _availableCurrencies);
+
+            cachedData.AddLast(currencyData);
             
             _logger.LogInformation("Current time: " + DateTime.Now.ToString("T"));
         }
