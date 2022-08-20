@@ -27,7 +27,7 @@ namespace WebAPI.Services
         private Timer _timer;
         private CurrencyDataGenerator _dataGenerator;
         private Dictionary<string, double> _initialCurrencyValues = new Dictionary<string, double>();
-        private const int UPDATE_INTERVAL = 60;
+        private const int UPDATE_INTERVAL = 10;
         public const string CACHE_KEY = "currency_data";
 
 
@@ -121,6 +121,11 @@ namespace WebAPI.Services
                 {
                     Priority = CacheItemPriority.High
                 });
+
+                for (int i = 0; i < 25; i++)
+                {
+                    cachedData.AddLast(_dataGenerator.GenerateCurrencyData(cachedData.Last.Value, UPDATE_INTERVAL));
+                }
             }
 
             if (cachedData.Count > 1000)

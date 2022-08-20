@@ -42,7 +42,7 @@ namespace Infrastructure.Seeds
                         High = randomNumbers.Max(),
                         Low = randomNumbers.Min()
                     },
-                    Value = GetRandomNumber(minRange, maxRange)
+                    Value = randomNumbers.Average()
                 };
             }).ToList();
 

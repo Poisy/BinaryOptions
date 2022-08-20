@@ -6,6 +6,7 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import {Button} from "react-bootstrap";
 import { useCookies } from "react-cookie";
+import Charts from "./components/Charts";
 
 function App() {
   const [cookies, setCookie, removeCookie] = useCookies();
@@ -62,6 +63,12 @@ function App() {
           </div>
         </nav>
       </header>
+      <div className='container align-items-center'>
+        {
+          token == null ? "Please sing in to see the charts..." :
+              <Charts token={token}></Charts>
+        }
+      </div>
     </div>
   );
 }

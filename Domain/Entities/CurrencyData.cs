@@ -23,7 +23,8 @@ namespace Domain.Entities
                 High = currencyModel.OHLC.High,
                 Low = currencyModel.OHLC.Low,
                 Open = currencyModel.OHLC.Open,
-                Close = currencyModel.OHLC.Close
+                Close = currencyModel.OHLC.Close,
+                Price = currencyModel.Value
             };
         }
     }
