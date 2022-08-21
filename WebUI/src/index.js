@@ -4,22 +4,17 @@ import './css/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {DevSupport} from "@react-buddy/ide-toolbox";
-import {ComponentPreviews, useInitial} from "./dev";
 import {GoogleOAuthProvider} from "@react-oauth/google";
 import { CookiesProvider } from "react-cookie";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <DevSupport ComponentPreviews={ComponentPreviews}
-                    useInitialHook={useInitial}
-        >
-            <CookiesProvider>
-                <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
-                    <App/>
-                </GoogleOAuthProvider>
-            </CookiesProvider>
-        </DevSupport>
+        <CookiesProvider>
+            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+                <App/>
+            </GoogleOAuthProvider>
+        </CookiesProvider>
     </React.StrictMode>
 );
 
