@@ -9,7 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebAPI.Helpers;
+using Domain.Helpers;
 using Domain.Entities;
 using Infrastructure.Seeds;
 using WebAPI.Models;

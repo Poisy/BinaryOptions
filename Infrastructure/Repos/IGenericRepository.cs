@@ -7,20 +7,20 @@ namespace Infrastructure.Repos
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<T> GetById(Guid id);
+        Task<T> GetByIdAsync(Guid id);
         
-        Task<IEnumerable<T>> GetAll();
+        Task<IEnumerable<T>> GetAllAsync();
         
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> expression);
         
-        Task<T> FirstOrDefault(Expression<Func<T, bool>> expression);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression);
         
-        Task Add(T entity);
+        Task AddAsync(T entity);
         
         void Remove(T entity);
         
         void Update(Guid id, T entity);
 
-        Task Complete();
+        Task CompleteAsync();
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Entities;
 using Infrastructure;
 using Infrastructure.Models;
 using Infrastructure.Repos;
@@ -58,6 +59,8 @@ namespace WebAPI
             
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+            services.AddScoped<OptionService>();
+            services.AddScoped<CurrencyService>();
             services.AddScoped<UserService>();
             
             services.AddHostedService<CurrencyHostedService>();

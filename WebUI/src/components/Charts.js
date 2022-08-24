@@ -3,6 +3,7 @@ import {getAllLatestCurrencyData, getLatestCurrencyData} from "../services/curre
 import Highcharts from 'highcharts/highstock'
 import Highchart from "./Highchart";
 import CurrencyTable from "./CurrencyTable";
+import Bets from "./Bets";
 
 
 const UPDATE_INTERVAL = 10000; // in milliseconds
@@ -53,13 +54,13 @@ class Charts extends Component {
         console.log('updateChart')
         getLatestCurrencyData(this.props.token, this.state.selectedCurrency)
             .then(result => {
-                this.setState({selectedCurrencyValue: Math.round(result.price * 100) / 100})
+                this.setState({selectedCurrencyValue: result.price})
                 let newData = [
                     new Date(result.startDate).getTime(),
-                    Math.round(result.open * 100) / 100,
-                    Math.round(result.high * 100) / 100,
-                    Math.round(result.low * 100) / 100,
-                    Math.round(result.close * 100) / 100
+                    result.open,
+                    result.high,
+                    result.low,
+                    result.close
                 ];
                 
                 if (!this.state.data.includes(newData)) {
@@ -74,13 +75,13 @@ class Charts extends Component {
         console.log('updateWholeChart')
         getAllLatestCurrencyData(this.props.token, this.state.selectedCurrency)
             .then(result => result.map(c => {
-                this.setState({selectedCurrencyValue: Math.round(result.at(-1).price * 100) / 100})
+                this.setState({selectedCurrencyValue: result.at(-1).price})
                 return [
                     new Date(c.startDate).getTime(),
-                    Math.round(c.open * 100) / 100,
-                    Math.round(c.high * 100) / 100,
-                    Math.round(c.low * 100) / 100,
-                    Math.round(c.close * 100) / 100
+                    c.open,
+                    c.high,
+                    c.low,
+                    c.close
                 ];
             }))
             .then(data => {
@@ -137,6 +138,12 @@ class Charts extends Component {
                         ? <Highchart data={this.state.data} type={this.state.chartType} currency={this.state.selectedCurrency}></Highchart> 
                         : <CurrencyTable data={this.state.data}></CurrencyTable>
                 }
+                
+                <Bets
+                    token={this.props.token}
+                    currency={this.state.selectedCurrency} 
+                    currencyValue={this.state.selectedCurrencyValue}>
+                </Bets>
 
             </div>
 

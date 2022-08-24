@@ -5,11 +5,11 @@ namespace Domain.Validations
     public class GreaterThanAttribute : ValidationAttribute
     {
         //=============================================================================================
-        private readonly float _value;
+        private readonly double _value;
 
         
         //=============================================================================================
-        public GreaterThanAttribute(float value)
+        public GreaterThanAttribute(double value)
         {
             _value = value;
         }
@@ -18,7 +18,7 @@ namespace Domain.Validations
         //=============================================================================================
         public override bool IsValid(object value)
         {
-            return (int)value > _value;
+            return (double)value > _value;
         }
     }
 }

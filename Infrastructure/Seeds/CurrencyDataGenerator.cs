@@ -23,8 +23,8 @@ namespace Infrastructure.Seeds
 
             newCurrencyData.Currencies = previousData.Currencies.Select(currency =>
             {
-                double minRange = currency.OHLC.Low - 0.03 * currency.OHLC.Low;
-                double maxRange = currency.OHLC.High + 0.03 * currency.OHLC.High;
+                double minRange = currency.OHLC.Low - 0.001 * currency.OHLC.Low;
+                double maxRange = currency.OHLC.High + 0.001 * currency.OHLC.High;
 
                 var randomNumbers = new []
                 {

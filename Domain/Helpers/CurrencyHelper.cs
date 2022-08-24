@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Domain.Entities;
 
-namespace WebAPI.Helpers
+namespace Domain.Helpers
 {
     public static class CurrencyHelper
     {
@@ -22,6 +23,19 @@ namespace WebAPI.Helpers
                     }
                 };
             }
+        }
+
+        public static double RoundCurrency(double currencyValue)
+        {
+            var precision = currencyValue switch
+            {
+                > 100 => 2,
+                > 10 => 3,
+                > 1 => 4,
+                _ => 5
+            };
+
+            return Math.Round(currencyValue, precision);
         }
     }
 }

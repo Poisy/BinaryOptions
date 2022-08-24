@@ -30,7 +30,11 @@ namespace Domain.Entities
 
         [Required]
         [GreaterThan(0)]
-        public float PercentageReward { get; set; }
+        public double Barrier { get; set; }
+
+        [Required]
+        [GreaterThan(0)]
+        public double PercentageReward { get; set; }
 
         [Required]
         public bool IsActive { get; set; }

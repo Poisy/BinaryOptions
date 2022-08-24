@@ -21,31 +21,31 @@ namespace Infrastructure.Repos
         
         
         //=============================================================================================
-        public async Task<T> GetById(Guid id)
+        public async Task<T> GetByIdAsync(Guid id)
         {
             return await _db.Set<T>().FindAsync(id);
         }
 
         //=============================================================================================
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _db.Set<T>().ToListAsync();
         }
 
         //=============================================================================================
-        public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> expression)
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> expression)
         {
             return await _db.Set<T>().Where(expression).ToListAsync();
         }
 
         //=============================================================================================
-        public async Task<T> FirstOrDefault(Expression<Func<T, bool>> expression)
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression)
         {
             return await _db.Set<T>().FirstOrDefaultAsync(expression);
         }
 
         //=============================================================================================
-        public async Task Add(T entity)
+        public async Task AddAsync(T entity)
         {
             await _db.Set<T>().AddAsync(entity);
         }
@@ -63,7 +63,7 @@ namespace Infrastructure.Repos
         }
 
         //=============================================================================================
-        public async Task Complete()
+        public async Task CompleteAsync()
         {
             await _db.SaveChangesAsync();
         }
