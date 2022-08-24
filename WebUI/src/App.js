@@ -1,6 +1,5 @@
-import logo from './logo.svg';
 import './css/App.css';
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import Register from "./components/Register";
 import Login from "./components/Login";

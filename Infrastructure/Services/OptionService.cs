@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Entities.Dto;
 using Domain.Helpers;
 using Infrastructure.Repos;
 
@@ -28,9 +30,10 @@ namespace Infrastructure.Services
         }
         
         //=============================================================================================
-        
-        
-        
+        public async Task<List<Option>> GetAllOptionsForUser(Guid userId)
+            => (await _optionRepo.FindAsync(option => option.UserId == userId))
+                .ToList();
+
         //=============================================================================================
         public BetPreview GetBetPreview(string currency, LinkedList<CurrencyData> data)
         {
@@ -77,7 +80,6 @@ namespace Infrastructure.Services
                     OptionInfos = options
                 });
             }
-            
             
             return result;
         }

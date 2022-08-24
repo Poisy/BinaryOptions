@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
 using Infrastructure.Repos;
@@ -47,5 +49,8 @@ namespace Infrastructure.Services
             return await _currencyRepo
                 .FirstOrDefaultAsync(pair => pair.Name.Equals(currencyName));
         }
+
+        public async Task<List<CurrencyPair>> GetAllAsync()
+            => (await _currencyRepo.GetAllAsync()).ToList();
     }
 }

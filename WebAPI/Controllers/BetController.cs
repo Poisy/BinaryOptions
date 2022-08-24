@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.Entities;
+using Domain.Helpers;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +65,7 @@ namespace WebAPI.Controllers
 
         //=============================================================================================
         [HttpPost]
-        public async Task<IActionResult> MakeABed(BetArg bet)
+        public async Task<IActionResult> MakeABet(BetArg bet)
         {
             if (!_availableCurrencies.Contains(bet.Currency))
             {
@@ -96,6 +98,19 @@ namespace WebAPI.Controllers
             {
                 Status = 200
             });
+        }
+        
+        
+        //=============================================================================================
+        [HttpGet]
+        public async Task<IActionResult> GetBets()
+        {
+            var user = await _userService.GetByUsername(User?.Identity?.Name);
+            var allCurrencies = await _currencyService.GetAllAsync();
+            var options = await _optionService.GetAllOptionsForUser(new Guid(user.Id));
+            var optionsDtos = options.ToReadDtos(allCurrencies);
+
+            return Ok(optionsDtos);
         }
     }
 }

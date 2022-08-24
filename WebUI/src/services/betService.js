@@ -18,3 +18,13 @@ export async function createBet(token, bet) {
         body: JSON.stringify(bet)
     }).then(response => response.json());
 }
+
+export async function getAllOptions(token, currency) {
+    return fetch(`https://localhost:5001/api/bet`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    }).then(response => response.json());
+}
