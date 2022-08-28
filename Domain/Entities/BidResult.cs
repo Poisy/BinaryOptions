@@ -17,7 +17,7 @@ namespace Domain.Entities
 
         [Required]
         [GreaterThan(0)]
-        public float Value { get; set; }
+        public double Value { get; set; }
 
         [Required]
         public bool DidWin { get; set; }

@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {Button, Modal, Table} from "react-bootstrap";
+import {Button, Modal, OverlayTrigger, Popover, Table} from "react-bootstrap";
 import {createBet, getAllOptions, getBetPreview} from "../services/betService";
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import BetsTable from "./BetsTable";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 
 class Bets extends Component {
@@ -14,18 +15,42 @@ class Bets extends Component {
             showModal: false,
             options: [],
             previewBet: {options: [{optionInfos: []}]},
-            payout: 0,
+            payout: 10,
             expirationDate: 0
         };
 
         this.payoutInput = React.createRef();
+
+        this.popover = (
+            <Popover id="popover-basic">
+                <Popover.Header as="h3">Betting Info</Popover.Header>
+                <Popover.Body>
+                    You can bet with minimum of $10 and maximum of $1000.
+                    Bet if you think that after the expiration time the price will
+                    go higher or lower. You pay with the payout that you give and if
+                    your prediction is right, you get your money back.
+                    Whether you win or lose you get percentage bonus which is based on the payout
+                    you selected.
+                </Popover.Body>
+            </Popover>
+        );
+        
+        this.updateOptions = this.updateOptions.bind(this);
+        this.completeOptionHandle = this.completeOptionHandle.bind(this);
     }
 
     handleClose = () => this.setState({showModal: false});
     handleShow = () => this.setState({showModal: true});
 
     handlePayoutChange(event) {
-        const payout = (event.target.validity.valid) ? event.target.value : this.state.payout;
+        let payout;
+        const regex = /^[0-9]*$/;
+        
+        if (regex.test(event.target.value) && event.target.value <= 1000) {
+            payout = event.target.value;
+        } else {
+            payout = this.state.payout;
+        }
 
         this.setState({payout});
     }
@@ -59,6 +84,11 @@ class Bets extends Component {
             .then(response => {
                 this.setState({options: response})
             });
+    }
+    
+    completeOptionHandle() {
+        this.updateOptions();
+        this.props.updateUser();
     }
 
     createBet(barrier, slope, percentageReward) {
@@ -102,6 +132,7 @@ class Bets extends Component {
             })
             .then(() => {
                 this.updateOptions();
+                this.props.updateUser();
             });
     }
 
@@ -120,6 +151,19 @@ class Bets extends Component {
                     <Modal.Body>
 
                         <div className="input-group mb-3">
+                            <span className="input-group-text">Balance:
+                                <h5 className='mx-3'>
+                                    <span className="badge bg-light text-dark lead">${this.props.user.balance}</span>
+                                </h5>
+                            </span>
+                            <span className="input-group-text">Selected Currency:
+                                <h5 className='mx-3'>
+                                    <span className="badge bg-light text-dark lead">{this.props.currency}</span>
+                                </h5>
+                            </span>
+                        </div>
+
+                        <div className="input-group mb-3">
                             <select className="form-select" onChange={this.handleExpirationDateChange.bind(this)}
                                     value={this.state.expirationDate}>
                                 <option value='0'>Choose Expiration</option>
@@ -128,9 +172,11 @@ class Bets extends Component {
                                 <option value="3">1 Hour</option>
                             </select>
                             <span className="input-group-text">$</span>
-                            <input ref={this.payoutInput} type="number" className="form-control" placeholder='Payout'
-                                   pattern="[0-9]*"
+                            <input ref={this.payoutInput} type="text" className="form-control" placeholder='Payout'
                                    onInput={this.handlePayoutChange.bind(this)} value={this.state.payout}/>
+                            <OverlayTrigger trigger="click" placement="right" overlay={this.popover}>
+                                <Button><i className="bi bi-info-circle"></i></Button>
+                            </OverlayTrigger>
                         </div>
 
                         <Table>
@@ -169,7 +215,9 @@ class Bets extends Component {
                     </Modal.Body>
                 </Modal>
 
-                <BetsTable token={this.props.token} options={this.state.options}></BetsTable>
+                <BetsTable token={this.props.token} options={this.state.options} 
+                           onComplete={this.completeOptionHandle}>
+                </BetsTable>
 
                 <ToastContainer
                     position="bottom-right"

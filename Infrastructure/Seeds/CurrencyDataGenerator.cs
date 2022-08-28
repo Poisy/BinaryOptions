@@ -28,6 +28,7 @@ namespace Infrastructure.Seeds
 
                 var randomNumbers = new []
                 {
+                    currency.OHLC.Open,
                     GetRandomNumber(minRange, maxRange),
                     GetRandomNumber(minRange, maxRange)
                 };

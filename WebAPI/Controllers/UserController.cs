@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
         [HttpGet()]
         public async Task<IActionResult> GetCurrentUser()
         {
-            var user = await _userService.GetByUsername(User.Identity.Name);
+            var user = await _userService.GetByUsernameAsync(User.Identity.Name);
 
             return Ok(new
             {

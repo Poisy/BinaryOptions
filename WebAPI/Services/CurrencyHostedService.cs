@@ -122,10 +122,10 @@ namespace WebAPI.Services
                     Priority = CacheItemPriority.High
                 });
 
-                for (int i = 0; i < 25; i++)
-                {
-                    cachedData.AddLast(_dataGenerator.GenerateCurrencyData(cachedData.Last.Value, UPDATE_INTERVAL));
-                }
+                // for (int i = 0; i < 25; i++)
+                // {
+                //     cachedData.AddLast(_dataGenerator.GenerateCurrencyData(cachedData.Last.Value, UPDATE_INTERVAL));
+                // }
             }
 
             if (cachedData.Count > 1000)

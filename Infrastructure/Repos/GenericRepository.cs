@@ -23,7 +23,7 @@ namespace Infrastructure.Repos
         //=============================================================================================
         public async Task<T> GetByIdAsync(Guid id)
         {
-            return await _db.Set<T>().FindAsync(id);
+            return await _db.Set<T>().FindAsync(id.ToString());
         }
 
         //=============================================================================================

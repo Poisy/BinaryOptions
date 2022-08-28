@@ -1,11 +1,13 @@
 import './css/App.css';
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import 'bootstrap/dist/css/bootstrap.css';
 import Register from "./components/Register";
 import Login from "./components/Login";
 import {Button} from "react-bootstrap";
 import { useCookies } from "react-cookie";
 import Charts from "./components/Charts";
+import Profile from "./components/Profile";
+import {getUser} from "./services/authenticationService";
 
 function App() {
   const [cookies, setCookie, removeCookie] = useCookies();
@@ -13,13 +15,20 @@ function App() {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [token, setToken] = useState(cookies['token']);
-  const [user, setUser] = useState(cookies['user']);
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    if (JSON.stringify(user) === '{}') {
+      updateUser();
+    }
+  }, []);
+
+  
   
   function login(userArg, tokenArg) {
     setUser(userArg);
     setToken(tokenArg);
     
-    setCookie('user', userArg, { maxAge: 86400 })
     setCookie('token', tokenArg, { maxAge: 86400 })
   }
   
@@ -27,8 +36,18 @@ function App() {
     setUser(null);
     setToken(null);
     
-    removeCookie('user');
     removeCookie('token');
+  }
+  
+  function updateUser() {
+    getUser(token).then(async res => {
+      if (res.status === 200) {
+        await res.json().then(res => {
+          login(res, token);
+        })
+      } else {
+        alert('Something went wrong...');
+      }});
   }
   
   return (
@@ -45,7 +64,7 @@ function App() {
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
               <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                  <a className="nav-link" href="#">Hello {user?.username}</a>
+                  <a className="nav-link" href="#"></a>
                 </li>
               </ul>
               <div className="d-flex">
@@ -55,7 +74,10 @@ function App() {
                         <Register state={showRegisterModal} setState={setShowRegisterModal} setLoginState={setShowLoginModal} user={user}/>
                         <Login state={showLoginModal} setState={setShowLoginModal} setRegisterState={setShowRegisterModal} user={user} login={login}/>
                       </> :
-                      <Button variant='outline-success' onClick={logout}>Logout</Button>
+                      <>
+                        <Profile user={user}></Profile>
+                        <Button variant='outline-success' onClick={logout}>Logout</Button>
+                      </>
                 }
               </div>
             </div>
@@ -65,7 +87,7 @@ function App() {
       <div className='container align-items-center'>
         {
           token == null ? "Please sing in to see the charts..." :
-              <Charts token={token}></Charts>
+              <Charts token={token} updateUser={updateUser} user={user}></Charts>
         }
       </div>
     </div>

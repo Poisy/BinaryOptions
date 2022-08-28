@@ -1,10 +1,11 @@
 using System;
+using Domain.Helpers;
 
 namespace Domain.Entities.Dto
 {
     public class OptionReadDto
     {
-        public OptionReadDto(Option option, string currencyName)
+        public OptionReadDto(Option option, string currencyName, bool didWin, double price)
         {
             Currency = currencyName;
             StartDate = option.StartDate;
@@ -14,6 +15,8 @@ namespace Domain.Entities.Dto
             Barrier = option.Barrier;
             PercentageReward = option.PercentageReward;
             IsActive = option.IsActive;
+            DidWin = didWin;
+            Price = CurrencyHelper.RoundCurrency(price);
         }
 
         public string Currency { get; set; }
@@ -31,5 +34,9 @@ namespace Domain.Entities.Dto
         public double PercentageReward { get; set; }
 
         public bool IsActive { get; set; }
+
+        public bool DidWin { get; set; }
+
+        public double Price { get; set; }
     }
 }

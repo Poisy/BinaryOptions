@@ -142,7 +142,9 @@ class Charts extends Component {
                 <Bets
                     token={this.props.token}
                     currency={this.state.selectedCurrency} 
-                    currencyValue={this.state.selectedCurrencyValue}>
+                    currencyValue={this.state.selectedCurrencyValue}
+                    updateUser={this.props.updateUser}
+                    user={this.props.user}>
                 </Bets>
 
             </div>

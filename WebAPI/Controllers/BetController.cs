@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
                 return _apiBehaviorOptions.Value.InvalidModelStateResponseFactory(ControllerContext);
             }
 
-            var betPreview = _optionService.GetBetPreview(currency, _data);
+            var betPreview = OptionService.GetBetPreview(currency, _data);
 
             return Ok(betPreview);
         }
@@ -73,12 +73,17 @@ namespace WebAPI.Controllers
                 
                 return _apiBehaviorOptions.Value.InvalidModelStateResponseFactory(ControllerContext);
             }
+
+            if (!(await _userService.CanSystemPayAsync(bet.Payout)))
+            {
+                ModelState.AddModelError("Balance", $"We are sorry, we cannot accept bets right now. Please try again later.");
+                
+                return _apiBehaviorOptions.Value.InvalidModelStateResponseFactory(ControllerContext);
+            }
             
-            var user = await _userService.GetByUsername(User?.Identity?.Name);
-
-            var canUserBet = await _userService.RemoveFromBalance(user, bet.Payout);
-
-            if (!canUserBet)
+            var user = await _userService.GetByUsernameAsync(User?.Identity?.Name);
+            
+            if (!_userService.CanUserPay(user, bet.Payout))
             {
                 ModelState.AddModelError("Balance", $"User balance is too low!");
                 
@@ -90,6 +95,7 @@ namespace WebAPI.Controllers
             var currency = await _currencyService.GetAsync(bet.Currency);
             var option = bet.ToOption(user, currency);
             
+            await _userService.TransferMoneyFromUserToSystemAsync(user, bet.Payout);
             await _optionService.AddOptionAsync(option);
             
             _logger.LogInformation($"New Option created for user {user.Id} !");
@@ -105,10 +111,11 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBets()
         {
-            var user = await _userService.GetByUsername(User?.Identity?.Name);
+            var user = await _userService.GetByUsernameAsync(User?.Identity?.Name);
             var allCurrencies = await _currencyService.GetAllAsync();
             var options = await _optionService.GetAllOptionsForUser(new Guid(user.Id));
-            var optionsDtos = options.ToReadDtos(allCurrencies);
+            var bidResults = await _optionService.GetAllBidResultsForUser(new Guid(user.Id));
+            var optionsDtos = options.ToReadDtos(allCurrencies, bidResults);
 
             return Ok(optionsDtos);
         }

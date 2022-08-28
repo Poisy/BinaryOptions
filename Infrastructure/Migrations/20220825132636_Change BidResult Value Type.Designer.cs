@@ -4,14 +4,16 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(BinaryOptionsDbContext))]
-    partial class BinaryOptionsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220825132636_Change BidResult Value Type")]
+    partial class ChangeBidResultValueType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,26 +187,6 @@ namespace Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "00000000-0000-0000-0000-000000000000",
-                            AccessFailedCount = 0,
-                            Balance = 100000.0,
-                            ConcurrencyStamp = "ea301405-2086-4b73-b6d8-87f18121d9e9",
-                            Email = "admin@mail.com",
-                            EmailConfirmed = false,
-                            LockoutEnabled = false,
-                            Nationality = "BG",
-                            NormalizedEmail = "admin@mail.com",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIsJToFbMhERLP+uVSR4dNLAdyp/YjPRTJgZPZ9BsF7NykQpzbHiPUNvYPmzoB6s5Q==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "c14b7d4c-2a9a-49c4-85d9-45d13d7354e2",
-                            TwoFactorEnabled = false,
-                            UserName = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

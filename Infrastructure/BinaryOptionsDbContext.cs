@@ -1,12 +1,17 @@
+using System;
 using Domain.Entities;
 using Infrastructure.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure
 {
     public class BinaryOptionsDbContext : IdentityDbContext<ApplicationUser>
     {
+        private readonly IConfiguration _configuration;
+
         //=============================================================================================
         public DbSet<ApplicationUser> Users { get; set; }
 
@@ -20,9 +25,9 @@ namespace Infrastructure
         
         
         //=============================================================================================
-        public BinaryOptionsDbContext(DbContextOptions<BinaryOptionsDbContext> options) : base(options)
+        public BinaryOptionsDbContext(DbContextOptions<BinaryOptionsDbContext> options, IConfiguration configuration) : base(options)
         {
-            
+            _configuration = configuration;
         }
         
         
@@ -31,6 +36,19 @@ namespace Infrastructure
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationUser>().HasData(new ApplicationUser
+            {
+                Id = new Guid().ToString(),
+                UserName = "Admin",
+                NormalizedUserName = "ADMIN",
+                PasswordHash = new PasswordHasher<ApplicationUser>()
+                    .HashPassword(null, _configuration["Admin:Password"]),
+                Email = _configuration["Admin:Email"],
+                NormalizedEmail = _configuration["Admin:Email"],
+                Nationality = "BG",
+                Balance = 100000
+            });
         }
     }
 }

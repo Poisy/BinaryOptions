@@ -64,6 +64,7 @@ namespace WebAPI
             services.AddScoped<UserService>();
             
             services.AddHostedService<CurrencyHostedService>();
+            services.AddHostedService<OptionHostedService>();
 
             #region JWT Authentication
             var jwtSection = Configuration.GetSection("JwtBearerTokenSettings");

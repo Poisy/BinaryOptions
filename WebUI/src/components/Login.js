@@ -93,54 +93,53 @@ const Login = (props) => {
     }
 
     return (
-        props.user != null ? "" :
-            <>
-                <Button variant="outline-success" onClick={handleShow}>
-                    Sign In
-                </Button>
+        <>
+            <Button variant="outline-success" onClick={handleShow}>
+                Sign In
+            </Button>
 
-                <Modal show={props.state} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Login</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body className="">
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <div className="text-danger">{errors.error?.message}</div>
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">Email</label>
-                                <input type="email" className="form-control" id="email" aria-describedby="emailHelp"
-                                       {...register("Email")}
+            <Modal show={props.state} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Login</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="text-danger">{errors.error?.message}</div>
+                        <div className="mb-3">
+                            <label htmlFor="email" className="form-label">Email</label>
+                            <input type="email" className="form-control" id="email" aria-describedby="emailHelp"
+                                   {...register("Email")}
+                            />
+                            <div className="text-danger">{errors.Email?.message}</div>
+                        </div>
+                        <div className='row'>
+                            <div className="mb-3 col">
+                                <label htmlFor="password" className="form-label">Password</label>
+                                <input type="password" className="form-control" id="password"
+                                       {...register("Password")}
                                 />
-                                <div className="text-danger">{errors.Email?.message}</div>
                             </div>
-                            <div className='row'>
-                                <div className="mb-3 col">
-                                    <label htmlFor="password" className="form-label">Password</label>
-                                    <input type="password" className="form-control" id="password"
-                                           {...register("Password")}
-                                    />
-                                </div>
-                            </div>
-                            <Modal.Footer>
-                                <Button variant="outline-primary" onClick={handleShowRegister}>
-                                    Don't have account ?
-                                </Button>
-                                <Button type='submit' variant="primary">
-                                    Sign In
-                                </Button>
-                                <GoogleLogin
-                                    onSuccess={handleGoogleLogin}>
-                                </GoogleLogin>
-                                <FacebookLogin
-                                    appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-                                    fields="name,email,picture"
-                                    callback={handleFacebookLogin}
-                                    size='small'/>
-                            </Modal.Footer>
-                        </form>
-                    </Modal.Body>
-                </Modal>
-            </>
+                        </div>
+                        <Modal.Footer>
+                            <Button variant="outline-primary" onClick={handleShowRegister}>
+                                Don't have account ?
+                            </Button>
+                            <Button type='submit' variant="primary">
+                                Sign In
+                            </Button>
+                            <GoogleLogin
+                                onSuccess={handleGoogleLogin}>
+                            </GoogleLogin>
+                            <FacebookLogin
+                                appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+                                fields="name,email,picture"
+                                callback={handleFacebookLogin}
+                                size='small'/>
+                        </Modal.Footer>
+                    </form>
+                </Modal.Body>
+            </Modal>
+        </>
     );
 };  
 
