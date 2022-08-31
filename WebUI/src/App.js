@@ -17,8 +17,12 @@ function App() {
   const [token, setToken] = useState(cookies['token']);
   const [user, setUser] = useState({});
 
+  const [defaultCurrency, setDefaultCurrency] = useState(cookies['defaultCurrency'] ?? 'AUDJPY');
+  const [defaultChartType, setDefaultChartType] = useState(cookies['defaultChartType'] ?? 'candlestick');
+  const [defaultPayout, setDefaultPayout] = useState(cookies['defaultPayout'] ?? 10);
+
   useEffect(() => {
-    if (JSON.stringify(user) === '{}') {
+    if (token != null && JSON.stringify(user) === '{}') {
       updateUser();
     }
   }, []);
@@ -50,6 +54,16 @@ function App() {
       }});
   }
   
+  function updateSettings(currency, chartType, payout) {
+    setDefaultCurrency(currency);
+    setDefaultChartType(chartType);
+    setDefaultPayout(payout);
+
+    setCookie('defaultCurrency', currency, { maxAge: Number.MAX_SAFE_INTEGER });
+    setCookie('defaultChartType', chartType, { maxAge: Number.MAX_SAFE_INTEGER });
+    setCookie('defaultPayout', payout, { maxAge: Number.MAX_SAFE_INTEGER });
+  }
+  
   return (
     <div className="App">
       <header className="">
@@ -75,7 +89,13 @@ function App() {
                         <Login state={showLoginModal} setState={setShowLoginModal} setRegisterState={setShowRegisterModal} user={user} login={login}/>
                       </> :
                       <>
-                        <Profile user={user}></Profile>
+                        <Profile 
+                            user={user} 
+                            updateSettings={updateSettings}
+                            defaultCurrency={defaultCurrency}
+                            defaultChartType={defaultChartType}
+                            defaultPayout={defaultPayout}>
+                        </Profile>
                         <Button variant='outline-success' onClick={logout}>Logout</Button>
                       </>
                 }
@@ -87,7 +107,14 @@ function App() {
       <div className='container align-items-center'>
         {
           token == null ? "Please sing in to see the charts..." :
-              <Charts token={token} updateUser={updateUser} user={user}></Charts>
+              <Charts 
+                  token={token} 
+                  updateUser={updateUser} 
+                  user={user}
+                  defaultCurrency={defaultCurrency}
+                  defaultChartType={defaultChartType}
+                  defaultPayout={defaultPayout}>
+              </Charts>
         }
       </div>
     </div>

@@ -15,7 +15,7 @@ class Bets extends Component {
             showModal: false,
             options: [],
             previewBet: {options: [{optionInfos: []}]},
-            payout: 10,
+            payout: this.props.defaultPayout,
             expirationDate: 0
         };
 

@@ -4,6 +4,7 @@ import Highcharts from 'highcharts/highstock'
 import Highchart from "./Highchart";
 import CurrencyTable from "./CurrencyTable";
 import Bets from "./Bets";
+import currencies from '../data/currencies';
 
 
 const UPDATE_INTERVAL = 10000; // in milliseconds
@@ -15,8 +16,8 @@ class Charts extends Component {
 
         this.state = {
             data: [],
-            chartType: 'candlestick',
-            selectedCurrency: 'AUDJPY',
+            chartType: this.props.defaultChartType,
+            selectedCurrency: this.props.defaultCurrency,
             selectedCurrencyValue: 0
         };
         
@@ -119,15 +120,11 @@ class Charts extends Component {
                             <span className="visually-hidden">Toggle Dropdown</span>
                         </button>
                         <ul className="dropdown-menu">
-                            <button className='dropdown-item' onClick={this.updateCurrency}>AUDJPY</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>AUDUSD</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>EURGBP</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>EURJPY</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>EURUSD</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>GBPJPY</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>GBPUSD</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>USDCAD</button>
-                            <button className='dropdown-item' onClick={this.updateCurrency}>USDJPY</button>
+                            {
+                                currencies.map(currency => (
+                                    <button key={currency} className='dropdown-item' onClick={this.updateCurrency}>{currency}</button>
+                                ))
+                            }
                         </ul>
                     </div>
                     
@@ -144,7 +141,8 @@ class Charts extends Component {
                     currency={this.state.selectedCurrency} 
                     currencyValue={this.state.selectedCurrencyValue}
                     updateUser={this.props.updateUser}
-                    user={this.props.user}>
+                    user={this.props.user}
+                    defaultPayout={this.props.defaultPayout}>
                 </Bets>
 
             </div>

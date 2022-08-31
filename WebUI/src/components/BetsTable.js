@@ -63,9 +63,9 @@ class BetsTable extends Component {
             backgroundColor: '#ffffe6'
         };
 
-        if (row.isActive) {
+        if (row.isActive === 'Yes') {
             style.backgroundColor = '#ffffe6';
-        } else if (row.didWin) {
+        } else if (row.didWin === 'Yes') {
             style.backgroundColor = '#e6ffe6';
         } else {
             style.backgroundColor = '#ffebe6';
@@ -90,13 +90,13 @@ class BetsTable extends Component {
                             <p>Expired!</p>
                         </Countdown>),
                     currency: x.currency,
-                    payout: x.payout,
+                    payout: '$' + x.payout,
                     slope: x.slope,
-                    barrier: x.barrier,
-                    percentageReward: x.percentageReward,
-                    isActive: x['isActive'],
-                    didWin: x.didWin,
-                    price: x.price
+                    barrier: '$' + x.barrier,
+                    percentageReward: x.percentageReward * 100 + '%',
+                    isActive: x['isActive'] ? 'Yes' : 'No',
+                    didWin: !x.isActive ? x.didWin ? 'Yes' : 'No' : '-',
+                    price: '$'+x.price
                 }))}
                 columns={this.columns}
                 defaultSorted={this.defaultSorted}

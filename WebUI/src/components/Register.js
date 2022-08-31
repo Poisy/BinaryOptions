@@ -3,6 +3,7 @@ import "bootstrap/dist/js/bootstrap.min.js";
 import {Modal, Button} from "react-bootstrap";
 import {useForm} from "react-hook-form";
 import {registerUser} from "../services/authenticationService";
+import nationalities from '../data/nationalities'
 
 function Register(props){
     const handleClose = () => props.setState(false);
@@ -66,8 +67,11 @@ function Register(props){
                                         validate: { isNotDefault: v => v !== 'Select a Nationality'
                                                 || 'Select nationality!'} })}>
                             <option defaultValue>Select a Nationality</option>
-                            <option>Bulgaria</option>
-                            <option>Other</option>
+                            {
+                                nationalities.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))
+                            }
                         </select>
                         <div className="text-danger">{errors.Nationality?.message}</div>
                     </div>
